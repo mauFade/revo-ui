@@ -9,6 +9,8 @@ const config: Config = {
         themeBlack: "#0D0D0D",
         themeMetal: "#C5C0C0",
         themeRed: "#AB0404",
+        themeDarkerRed: "#700303",
+        themeUnactiveRed: "#5B0C0C",
       },
     },
   },
