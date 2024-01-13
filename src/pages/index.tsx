@@ -2,14 +2,36 @@ import { FC, FormEvent, useState } from "react";
 import { HeadPage } from "@commons/components/modules/Head";
 import Form from "@commons/components/modules/Form";
 import Button from "@commons/components/modules/Button";
+import Link from "next/link";
+import { API_URL } from "@commons/utils/constans/api";
+import { revoApi } from "@services/api/revoApi";
+import { tokenKey } from "@commons/utils/constans/header";
 
 const Home: FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log({ email, password });
+
+    const response = await revoApi.login(email, password);
+
+    if (response.error && response.error === "Invalid password") {
+      console.log("SENHA ERRADA");
+
+      return;
+    }
+
+    if (
+      response.error &&
+      response.error === "User not found with this email."
+    ) {
+      console.log("EMAIL INVALIDO");
+
+      return;
+    }
+
+    localStorage.setItem(tokenKey, response.token);
   };
 
   return (
@@ -23,7 +45,7 @@ const Home: FC = () => {
           <h3 className="font-light text-themeMetal pb-2">
             Revo, onde as coisas acontecem!
           </h3>
-          <form onSubmit={handleSubmit} className="w-2/4 pb-2">
+          <form onSubmit={handleSubmit} className="w-2/4 pb-4">
             <label className="flex flex-col pb-3">
               <span className="font-semibold text-sm pb-1">Seu e-mail:</span>
               <input
@@ -55,12 +77,12 @@ const Home: FC = () => {
           </form>
           <span className="font-light text-themeMetal">
             Ainda não tem uma conta?{" "}
-            <a
+            <Link
               href="/register"
               className="hover:text-white border-b transition-colors"
             >
               Registre-se
-            </a>
+            </Link>
           </span>
         </div>
       </div>
