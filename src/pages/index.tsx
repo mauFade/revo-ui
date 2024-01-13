@@ -23,7 +23,7 @@ const Home: FC = () => {
           <h3 className="font-light text-themeMetal pb-2">
             Revo, onde as coisas acontecem!
           </h3>
-          <form onSubmit={handleSubmit} className="w-2/4">
+          <form onSubmit={handleSubmit} className="w-2/4 pb-2">
             <label className="flex flex-col pb-3">
               <span className="font-semibold text-sm pb-1">Seu e-mail:</span>
               <input
@@ -53,6 +53,15 @@ const Home: FC = () => {
               Entrar
             </button>
           </form>
+          <span className="font-light text-themeMetal">
+            Ainda não tem uma conta?{" "}
+            <a
+              href="/register"
+              className="hover:text-white border-b transition-colors"
+            >
+              Registre-se
+            </a>
+          </span>
         </div>
       </div>
     </>
