@@ -1,24 +1,54 @@
 import { HeadPage } from "@commons/components/modules/Head";
-import { tokenKey } from "@commons/utils/constans/header";
+import Header from "@commons/components/modules/Header";
 import { revoApi } from "@services/api/revoApi";
 import { useRouter } from "next/navigation";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 
+interface PostInterface {
+  id: string;
+  user_id: string;
+  title: string;
+  body: string;
+  likes: number;
+  shares: number;
+  comments: number;
+  deleted: false;
+  deleted_at: Date | null;
+  updated_at: Date;
+  created_at: Date;
+}
 const Feed: FC = () => {
-  const notifications = 4;
-  const router = useRouter();
+  const [followingPosts, setFollowingPosts] = useState<PostInterface[]>([]);
 
-  const getPosts = async () => {
-    const data = await revoApi.getFollowingPosts();
-  };
+  const notifications = 4;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await revoApi.getFollowingPosts();
+      setFollowingPosts(data);
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <>
-      <HeadPage title={`(${notifications}) Revo`} />
+      <HeadPage title={`(${notifications}) Feed | Revo`} />
 
+      <Header />
       <div className="h-screen flex flex-row justify-center items-center">
-        <div className="bg-themeBlack h-full w-2/3">
-          <button onClick={getPosts}>click</button>
+        <div className="bg-themeBlack h-full w-1/3 mt-16 rounded-t-3xl">
+          <ul>
+            {followingPosts.map((post) => (
+              <li key={post.id} className="pb-4">
+                <h2>{post.title}</h2>
+                <p>{post.body}</p>
+                <p>Curtidas: {post.likes}</p>
+                <p>Compartilhamentos: {post.shares}</p>
+                <p>Comentários: {post.comments}</p>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </>
