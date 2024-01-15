@@ -5,6 +5,7 @@ import { revoApi } from "@services/api/revoApi";
 import { tokenKey } from "@commons/utils/constans/header";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { showToast } from "@commons/utils/showToast";
 
 const Home: FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -15,26 +16,28 @@ const Home: FC = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const response = await revoApi.login(email, password);
+    if (email && password) {
+      const response = await revoApi.login(email, password);
 
-    if (response.error && response.error === "Invalid password") {
-      toast("Senha errada!");
+      if (response.error && response.error === "Invalid password") {
+        showToast("Senha errada!", "warning");
+        return;
+      }
 
-      return;
+      if (
+        response.error &&
+        response.error === "User not found with this email."
+      ) {
+        showToast("Usuário não encontrado com esse e-mail!", "warning");
+        return;
+      }
+
+      localStorage.removeItem(tokenKey);
+      localStorage.setItem(tokenKey, response.token);
+
+      showToast("Login efetuado com sucesso!", "success");
+      router.push("/feed");
     }
-
-    if (
-      response.error &&
-      response.error === "User not found with this email."
-    ) {
-      toast("E-mail inválido!");
-
-      return;
-    }
-
-    localStorage.setItem(tokenKey, response.token);
-
-    router.push("/feed");
   };
 
   return (
