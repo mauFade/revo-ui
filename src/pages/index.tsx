@@ -4,8 +4,8 @@ import Link from "next/link";
 import { revoApi } from "@services/api/revoApi";
 import { tokenKey } from "@commons/utils/constans/header";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
 import { showToast } from "@commons/utils/showToast";
+import { setCookie, destroyCookie, parseCookies } from "nookies";
 
 const Home: FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -32,8 +32,17 @@ const Home: FC = () => {
         return;
       }
 
-      localStorage.removeItem(tokenKey);
-      localStorage.setItem(tokenKey, response.token);
+      destroyCookie(null, tokenKey);
+
+      setCookie(null, tokenKey, response.token, {
+        maxAge: 60 * 60, // 1 hora em segundos
+        path: "/", // O cookie é acessível em todo o site
+        sameSite: "strict", // Limita o envio do cookie para solicitações do mesmo site
+        secure: process.env.NODE_ENV === "production", // Apenas envie o cookie em conexões seguras (HTTPS) em produção
+      });
+
+      const cookies = parseCookies();
+      console.log(cookies);
 
       showToast("Login efetuado com sucesso!", "success");
       router.push("/feed");
