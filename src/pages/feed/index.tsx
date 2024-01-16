@@ -3,6 +3,7 @@ import Header from "@commons/components/modules/Header";
 import { revoApi } from "@services/api/revoApi";
 import { useRouter } from "next/navigation";
 import { FC, FormEvent, useEffect, useState } from "react";
+import Post from "./components/Post";
 
 interface PostInterface {
   id: string;
@@ -19,7 +20,6 @@ interface PostInterface {
 }
 const Feed: FC = () => {
   const [body, setBody] = useState<string>("");
-  const [title, setTitle] = useState<string>("");
   const [listChange, setListChange] = useState<boolean>(false);
 
   const [followingPosts, setFollowingPosts] = useState<PostInterface[]>([]);
@@ -39,9 +39,8 @@ const Feed: FC = () => {
   const handlePostSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const response = await revoApi.createPost({
+    await revoApi.createPost({
       body,
-      title,
     });
 
     setListChange(!listChange);
@@ -50,47 +49,53 @@ const Feed: FC = () => {
   return (
     <>
       <HeadPage title={`(${notifications}) Feed | Revo`} />
-
+      <div className="bg-themeBlack"></div>
       <Header />
-      <div className="h-full flex flex-col justify-center items-center">
-        <div className="bg-themeBlack h-44 w-1/3 mt-16 rounded-3xl border border-themeMetal">
-          <form onSubmit={handlePostSubmit} className="p-4 ">
-            <input
-              type="text"
-              className="hover:outline-none focus:outline-none mx-2 text-themeBlack font-semibold placeholder:text-themeBlack"
-              value={title}
-              placeholder="Título"
-              onChange={(e) => setTitle(e.target.value)}
-            />
-            <input
-              type="text"
-              className="hover:outline-none focus:outline-none mx-2 text-themeBlack font-semibold placeholder:text-themeBlack"
-              placeholder="Sobre o que"
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-            />
-            <button
-              type="submit"
-              className="bg-themeRed w-72"
-              disabled={title === "" && body === ""}
-            >
-              Criar
-            </button>
-          </form>
+
+      <div className="bg-themeBlack flex flex-row w-full justify-evenly h-full">
+        <div className="bg-themeGrey rounded-t-3xl w-1/4">ESQUERDA</div>
+
+        <div className="h-full w-2/5 flex flex-col justify-center items-center">
+          <div className=" w-full bg-themeGrey">
+            <form onSubmit={handlePostSubmit}>
+              <input
+                type="text"
+                className="hover:outline-none focus:outline-none text-themeBlack font-semibold placeholder:text-themeBlack"
+                placeholder="Compartilhe alguma coisa..."
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
+              />
+              <button
+                type="submit"
+                className="bg-themeRed w-72 disabled:bg-themeUnactiveRed hover:bg-themeDarkerRed transition-colors"
+                disabled={body === ""}
+                hidden={body === ""}
+              >
+                Criar
+              </button>
+            </form>
+          </div>
+
+          <div className="h-px bg-themeMetal w-full my-7"></div>
+
+          <div className=" w-full bg-themeGrey rounded-t-3xl">
+            <ul>
+              {followingPosts.map((post) => (
+                <li key={post.id}>
+                  <Post
+                    body={post.body}
+                    comments={post.comments}
+                    likes={post.likes}
+                    shares={post.shares}
+                    title={post.title}
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-        <div className="bg-themeBlack h-full w-1/3 mt-16 rounded-t-3xl border-x border-t border-themeMetal">
-          <ul>
-            {followingPosts.map((post) => (
-              <li key={post.id} className="pb-4">
-                <h2>{post.title}</h2>
-                <p>{post.body}</p>
-                <p>Curtidas: {post.likes}</p>
-                <p>Compartilhamentos: {post.shares}</p>
-                <p>Comentários: {post.comments}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
+
+        <div className="bg-themeGrey rounded-t-3xl w-1/4">DIREITA</div>
       </div>
     </>
   );

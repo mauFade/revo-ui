@@ -85,7 +85,8 @@ const Home: FC = () => {
 
             <button
               type="submit"
-              className="w-full bg-themeRed h-11 rounded-md hover:bg-themeDarkerRed transition-colors"
+              className="w-full bg-themeRed h-11 rounded-md hover:bg-themeDarkerRed transition-colors disabled:bg-themeUnactiveRed"
+              disabled={email === "" && password === ""}
             >
               Entrar
             </button>
