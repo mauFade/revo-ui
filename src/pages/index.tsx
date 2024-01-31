@@ -35,14 +35,11 @@ const Home: FC = () => {
       destroyCookie(null, tokenKey);
 
       setCookie(null, tokenKey, response.token, {
-        maxAge: 60 * 60, // 1 hora em segundos
-        path: "/", // O cookie é acessível em todo o site
-        sameSite: "strict", // Limita o envio do cookie para solicitações do mesmo site
-        secure: process.env.NODE_ENV === "production", // Apenas envie o cookie em conexões seguras (HTTPS) em produção
+        maxAge: 60 * 60 * 24,
+        path: "/",
+        sameSite: "strict",
+        secure: process.env.NODE_ENV === "production",
       });
-
-      const cookies = parseCookies();
-      console.log(cookies);
 
       showToast("Login efetuado com sucesso!", "success");
       router.push("/feed");

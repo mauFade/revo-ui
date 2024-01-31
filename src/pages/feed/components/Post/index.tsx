@@ -14,7 +14,7 @@ const Post: FC<PostInterface> = (props) => {
   const [clicked, setClicked] = useState<boolean>(false);
 
   return (
-    <div className="bg-themeBlack p-4 my-4 rounded-md shadow-md flex flex-col items-start">
+    <div className="bg-themeBlack p-4 my-4 rounded-3xl shadow-md flex flex-col items-start">
       <div className="flex items-center mb-2">
         <p className="text-themeMetal">@{props.username}</p>
       </div>
