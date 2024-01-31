@@ -8,7 +8,7 @@ import { IoHomeOutline } from "react-icons/io5";
 
 const Header: FC = () => {
   return (
-    <header className="container mx-auto bg-themeGrey p-4 h-14flex justify-between items-center fixed">
+    <header className="container bg-themeGrey p-4 h-14 w-full flex justify-between items-center fixed border border-red-500 mb-5">
       <nav className="space-x-4 flex items-center">
         <Link
           href="/feed"

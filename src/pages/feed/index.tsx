@@ -1,7 +1,5 @@
 import { HeadPage } from "@commons/components/modules/Head";
-import Header from "@commons/components/modules/Header";
 import { revoApi } from "@services/api/revoApi";
-import { useRouter } from "next/navigation";
 import { FC, FormEvent, useEffect, useState } from "react";
 import Post from "./components/Post";
 
@@ -18,6 +16,7 @@ interface PostInterface {
   updated_at: Date;
   created_at: Date;
 }
+
 const Feed: FC = () => {
   const [body, setBody] = useState<string>("");
   const [listChange, setListChange] = useState<boolean>(false);
@@ -39,63 +38,67 @@ const Feed: FC = () => {
   const handlePostSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    await revoApi.createPost({
+    const response = await revoApi.createPost({
       body,
+      title: "um titulo",
     });
 
+    console.log(response);
+
+    setBody("");
     setListChange(!listChange);
   };
 
   return (
     <>
       <HeadPage title={`(${notifications}) Feed | Revo`} />
-      <div className="bg-themeBlack"></div>
-      <Header />
 
-      <div className="bg-themeBlack flex flex-row w-full justify-evenly h-full">
-        <div className="bg-themeGrey rounded-t-3xl w-1/4">ESQUERDA</div>
+      <div className="bg-themeGrey text-white p-4 h-screen flex flex-row">
+        <div className="w-72 mx-auto bg-themeBlack text-white rounded-md hidden lg:block">
+          <h2 className="text-xl font-bold mb-4">Nome do Usuário</h2>
+        </div>
 
-        <div className="h-full w-2/5 flex flex-col justify-center items-center">
-          <div className=" w-full bg-themeGrey">
-            <form onSubmit={handlePostSubmit}>
-              <input
-                type="text"
-                className="hover:outline-none focus:outline-none text-themeBlack font-semibold placeholder:text-themeBlack"
-                placeholder="Compartilhe alguma coisa..."
-                value={body}
-                onChange={(e) => setBody(e.target.value)}
+        <div className="w-2/5 mx-auto">
+          <form
+            onSubmit={handlePostSubmit}
+            className="w-full mb-4 flex flex-row justify-center items-center"
+          >
+            <textarea
+              placeholder="O que está acontecendo?"
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              className="w-full p-2 bg-themeBlack text-white rounded-md focus:outline-none max-h-20 min-h-12"
+            />
+            <button
+              type="submit"
+              className="bg-themeRed text-white py-2 px-4 rounded-md h-12 ml-2 disabled:bg-themeUnactiveRed hover:bg-themeDarkerRed disabled:hover:cursor-not-allowed w-24 max-w-24"
+              disabled={body === ""}
+            >
+              Postar
+            </button>
+          </form>
+
+          <div className="w-full">
+            {followingPosts.map((post) => (
+              <Post
+                key={post.id}
+                body={post.body}
+                comments={post.comments}
+                likes={post.likes}
+                shares={post.shares}
+                username={post.user_id}
               />
-              <button
-                type="submit"
-                className="bg-themeRed w-72 disabled:bg-themeUnactiveRed hover:bg-themeDarkerRed transition-colors"
-                disabled={body === ""}
-                hidden={body === ""}
-              >
-                Criar
-              </button>
-            </form>
-          </div>
-
-          <div className="h-px bg-themeMetal w-full my-7"></div>
-
-          <div className=" w-full bg-themeGrey rounded-t-3xl">
-            <ul>
-              {followingPosts.map((post) => (
-                <li key={post.id}>
-                  <Post
-                    body={post.body}
-                    comments={post.comments}
-                    likes={post.likes}
-                    shares={post.shares}
-                    title={post.title}
-                  />
-                </li>
-              ))}
-            </ul>
+            ))}
           </div>
         </div>
 
-        <div className="bg-themeGrey rounded-t-3xl w-1/4">DIREITA</div>
+        <div className="w-72 mx-auto bg-themeBlack text-white rounded-md hidden lg:block">
+          <h2 className="text-xl font-bold mb-4">Notícias</h2>
+          <ul>
+            <li>Notícia 1</li>
+            <li>Notícia 2</li>
+          </ul>
+        </div>
       </div>
     </>
   );
