@@ -145,52 +145,6 @@ const Feed: FC = () => {
           </div>
         </div>
 
-        {/* <div className="w-3/12 mx-auto bg-themeBlack text-white rounded-3xl hidden lg:block h-full">
-          <h2 className="text-xl font-bold mb-4 text-center mt-8">
-            O que está acontecendo
-          </h2>
-          {loading ? (
-            <p>Carregando notícias...</p>
-          ) : (
-            <ul>
-              {visibleNews
-                .filter((article) => article.description && article.urlToImage)
-                .map((article, index) => (
-                  <li key={index} className="mb-4 px-4">
-                    <a
-                      href={article.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:underline font-medium"
-                    >
-                      {article.title}
-                    </a>
-                    {article.urlToImage && (
-                      <Image
-                        src={article.urlToImage}
-                        width={900}
-                        height={900}
-                        priority={true}
-                        alt="photo"
-                        className="rounded-3xl my-4"
-                      />
-                    )}
-                    <p className="text-themeMetal">{article.description}</p>
-                    <div className="bg-gray-600 h-px w-full mt-4"></div>
-                  </li>
-                ))}
-              {news.length > visibleNews.length && (
-                <button
-                  onClick={handleLoadMore}
-                  className="text-themeRed mt-2 cursor-pointer text-center"
-                >
-                  Ver mais...
-                </button>
-              )}
-            </ul>
-          )}
-        </div> */}
-
         <div className="w-3/12 mx-auto bg-themeBlack text-white rounded-3xl hidden lg:block h-full">
           <h2 className="text-xl font-bold mb-4 text-center mt-8">
             O que está acontecendo
@@ -200,29 +154,33 @@ const Feed: FC = () => {
           ) : (
             <>
               <ul>
-                {visibleNews.map((article, index) => (
-                  <li key={index} className="mb-4 px-4">
-                    <a
-                      href={article.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:underline font-medium"
-                    >
-                      {article.title}
-                    </a>
-                    {article.urlToImage && (
-                      <Image
-                        src={article.urlToImage}
-                        width={900}
-                        height={900}
-                        alt="photo"
-                        className="rounded-3xl my-4"
-                      />
-                    )}
-                    <p className="text-themeMetal">{article.description}</p>
-                    <div className="bg-gray-600 h-px w-full mt-4"></div>
-                  </li>
-                ))}
+                {visibleNews
+                  .filter(
+                    (article) => article.description && article.urlToImage
+                  )
+                  .map((article, index) => (
+                    <li key={index} className="mb-4 px-4">
+                      <a
+                        href={article.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:underline font-medium"
+                      >
+                        {article.title}
+                      </a>
+                      {article.urlToImage && (
+                        <Image
+                          src={article.urlToImage}
+                          width={900}
+                          height={900}
+                          alt="photo"
+                          className="rounded-3xl my-4"
+                        />
+                      )}
+                      <p className="text-themeMetal">{article.description}</p>
+                      <div className="bg-gray-600 h-px w-full mt-4"></div>
+                    </li>
+                  ))}
                 <div className="text-center pb-4 flex justify-around">
                   {news.length > visibleNews.length && (
                     <button
