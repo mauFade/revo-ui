@@ -6,6 +6,7 @@ import { tokenKey } from "@commons/utils/constans/header";
 import { useRouter } from "next/navigation";
 import { showToast } from "@commons/utils/showToast";
 import { setCookie, destroyCookie, parseCookies } from "nookies";
+import secureLocalStorage from "react-secure-storage";
 
 const Home: FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -32,14 +33,9 @@ const Home: FC = () => {
         return;
       }
 
-      destroyCookie(null, tokenKey);
+      secureLocalStorage.removeItem("user-data");
 
-      setCookie(null, tokenKey, response.token, {
-        maxAge: 60 * 60 * 24,
-        path: "/",
-        sameSite: "strict",
-        secure: process.env.NODE_ENV === "production",
-      });
+      secureLocalStorage.setItem("user-data", response.token);
 
       showToast("Login efetuado com sucesso!", "success");
       router.push("/feed");

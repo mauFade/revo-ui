@@ -1,17 +1,16 @@
 import { API_URL } from "@commons/utils/constans/api";
-import { tokenKey } from "@commons/utils/constans/header";
-import { parseCookies } from "nookies";
 import { CreatePostInterface } from "./dto";
+import secureLocalStorage from "react-secure-storage";
 
 class RevoApi {
   private apiUrl: string;
-  private cookies: {
-    [key: string]: string;
-  };
+  private token: string;
 
   constructor() {
+    const token = secureLocalStorage.getItem("user-data") as string;
+
     this.apiUrl = API_URL;
-    this.cookies = parseCookies();
+    this.token = token;
   }
 
   public async login(email: string, password: string) {
@@ -28,7 +27,7 @@ class RevoApi {
     const response = await fetch(`${this.apiUrl}/posts`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${this.cookies[tokenKey]}`,
+        Authorization: `Bearer ${this.token}`,
       },
     });
 
@@ -41,7 +40,7 @@ class RevoApi {
       body: JSON.stringify(data),
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${this.cookies[tokenKey]}`,
+        Authorization: `Bearer ${this.token}`,
       },
     });
 

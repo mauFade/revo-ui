@@ -2,15 +2,18 @@ import { HeadPage } from "@commons/components/modules/Head";
 import { revoApi } from "@services/api/revoApi";
 import { FC, FormEvent, useEffect, useState } from "react";
 import Post from "./components/Post";
-import { NEWS_API_KEY } from "@commons/utils/constans/api";
+import { NEWS_API_KEY, NEWS_API_URL } from "@commons/utils/constans/api";
 import Image from "next/image";
-import { parseCookies } from "nookies";
-import { tokenKey } from "@commons/utils/constans/header";
-import { useRouter } from "next/navigation";
+import { newsApi } from "@services/api/newsApi";
 
 interface PostInterface {
   id: string;
-  user_id: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    username: string;
+  };
   title: string;
   body: string;
   likes: number;
@@ -41,27 +44,15 @@ const Feed: FC = () => {
 
   const notifications = 4;
 
-  const router = useRouter();
-  const cookies = parseCookies();
-
   useEffect(() => {
-    if (!cookies[tokenKey]) {
-      router.push("/");
-    }
-    const fetchData = async () => {
-      const data = await revoApi.getFollowingPosts();
-
+    revoApi.getFollowingPosts().then((data) => {
       setFollowingPosts(data);
-    };
-
-    fetchData();
-  }, [cookies, listChange, router]);
+    });
+  }, [listChange]);
 
   useEffect(() => {
-    const apiUrl = `https://newsapi.org/v2/top-headlines?country=us&category=technology&apiKey=2463766eb59c4a7599baf233bce18266`;
-
-    fetch(apiUrl)
-      .then((response) => response.json())
+    newsApi
+      .getTechNews()
       .then((data) => {
         setNews(data.articles);
         setVisibleNews(data.articles.slice(0, 6));
@@ -86,7 +77,6 @@ const Feed: FC = () => {
   };
 
   const handleLoadMore = () => {
-    // Ao clicar em "Ver mais", adiciona mais 6 notícias
     const currentVisibleNewsCount = visibleNews.length;
     const nextVisibleNews = news.slice(
       currentVisibleNewsCount,
@@ -96,7 +86,6 @@ const Feed: FC = () => {
   };
 
   const handleLoadLess = () => {
-    // Se houver mais do que 6 notícias visíveis, oculta as últimas 6
     if (visibleNews.length > 6) {
       setVisibleNews((prevNews) => prevNews.slice(0, visibleNews.length - 6));
     }
@@ -124,7 +113,7 @@ const Feed: FC = () => {
             />
             <button
               type="submit"
-              className="bg-themeRed text-white py-2 px-4 rounded-3xl h-12 ml-2 disabled:bg-themeUnactiveRed hover:bg-themeDarkerRed disabled:hover:cursor-not-allowed w-24 max-w-24"
+              className="bg-blue-500 text-white py-2 px-4 rounded-3xl h-12 ml-2 disabled:bg-blue-900 hover:bg-blue-700 disabled:hover:cursor-not-allowed w-24 max-w-24"
               disabled={body === ""}
             >
               Postar
@@ -139,16 +128,14 @@ const Feed: FC = () => {
                 comments={post.comments}
                 likes={post.likes}
                 shares={post.shares}
-                username={post.user_id}
+                username={post.user.username}
               />
             ))}
           </div>
         </div>
 
         <div className="w-3/12 mx-auto bg-themeBlack text-white rounded-3xl hidden lg:block h-full">
-          <h2 className="text-xl font-bold mb-4 text-center mt-8">
-            O que está acontecendo
-          </h2>
+          <h2 className="text-xl font-bold mb-4 text-center mt-8">Notícias</h2>
           {loading ? (
             <p>Carregando notícias...</p>
           ) : (
