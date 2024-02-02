@@ -14,7 +14,9 @@ interface PostInterface {
     name: string;
     email: string;
     username: string;
+    avatar: string | null;
   };
+  liked_by_me: boolean;
   title: string;
   body: string;
   likes: number;
@@ -139,7 +141,8 @@ const Feed: FC = () => {
               <div className="w-full">
                 {followingPosts.map((post) => (
                   <Post
-                    avatar="https://i.pinimg.com/originals/d4/68/69/d468693b78aaaea4b11fbd55a7b17909.jpg"
+                    liked_by_me={post.liked_by_me}
+                    avatar={post.user.avatar}
                     name={post.user.name}
                     key={post.id}
                     body={post.body}

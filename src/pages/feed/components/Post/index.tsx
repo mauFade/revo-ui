@@ -2,10 +2,12 @@ import Image from "next/image";
 import { FC, useState } from "react";
 import { BsArrowRepeat, BsChat, BsHeart, BsHeartFill } from "react-icons/bs";
 import CommentsModal from "../modals/CommentsModal";
+import user from "../../../../../public/user.png";
 
 interface PostInterface {
   name: string;
-  avatar: string;
+  avatar: string | null;
+  liked_by_me: boolean;
   username: string;
   body: string;
   likes: number;
@@ -14,7 +16,6 @@ interface PostInterface {
 }
 
 const Post: FC<PostInterface> = (props) => {
-  const [clicked, setClicked] = useState<boolean>(false);
   const [isCommentsModalOpen, setIsCommentsModalOpen] =
     useState<boolean>(false);
 
@@ -26,7 +27,7 @@ const Post: FC<PostInterface> = (props) => {
     <div className="bg-themeBlack p-6 my-4 rounded-3xl shadow-md flex flex-col items-start">
       <div className="flex flex-row items-center mb-2 text-themeMetal">
         <Image
-          src={props.avatar}
+          src={props.avatar ? props.avatar : user}
           width={70}
           height={70}
           alt="photo"
@@ -50,11 +51,10 @@ const Post: FC<PostInterface> = (props) => {
         <button
           className="flex items-center mr-4"
           onClick={() => {
-            setClicked(!clicked);
             console.log("GOSTEI");
           }}
         >
-          {clicked ? (
+          {props.liked_by_me ? (
             <BsHeartFill className="text-themeRed mr-1" />
           ) : (
             <BsHeart className="text-themeMetal mr-1" />
