@@ -1,5 +1,5 @@
 import { API_URL } from "@commons/utils/constans/api";
-import { CreatePostInterface } from "./dto";
+import { CreatePostInterface, LikePostInterface } from "./dto";
 import secureLocalStorage from "react-secure-storage";
 
 class RevoApi {
@@ -36,6 +36,19 @@ class RevoApi {
 
   public async createPost(data: CreatePostInterface) {
     const response = await fetch(`${this.apiUrl}/posts`, {
+      method: "post",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.token}`,
+      },
+    });
+
+    return response.json();
+  }
+
+  public async likePost(data: LikePostInterface) {
+    const response = await fetch(`${this.apiUrl}/posts/like`, {
       method: "post",
       body: JSON.stringify(data),
       headers: {

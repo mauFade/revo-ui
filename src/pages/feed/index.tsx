@@ -141,6 +141,7 @@ const Feed: FC = () => {
               <div className="w-full">
                 {followingPosts.map((post) => (
                   <Post
+                    post_id={post.id}
                     liked_by_me={post.liked_by_me}
                     avatar={post.user.avatar}
                     name={post.user.name}

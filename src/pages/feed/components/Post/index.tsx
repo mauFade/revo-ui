@@ -1,10 +1,13 @@
 import Image from "next/image";
-import { FC, useState } from "react";
+import { FC, MouseEvent, useState } from "react";
 import { BsArrowRepeat, BsChat, BsHeart, BsHeartFill } from "react-icons/bs";
 import CommentsModal from "../modals/CommentsModal";
 import user from "../../../../../public/user.png";
+import { revoApi } from "@services/api/revoApi";
+import { showToast } from "@commons/utils/showToast";
 
 interface PostInterface {
+  post_id: string;
   name: string;
   avatar: string | null;
   liked_by_me: boolean;
@@ -21,6 +24,14 @@ const Post: FC<PostInterface> = (props) => {
 
   const handleToggleCommentsModal = () => {
     setIsCommentsModalOpen(!isCommentsModalOpen);
+  };
+
+  const handleLike = async () => {
+    const like = await revoApi.likePost({
+      post_id: props.post_id,
+    });
+
+    if (like.success === true) showToast("Like com sucesso!", "success");
   };
 
   return (
@@ -48,12 +59,7 @@ const Post: FC<PostInterface> = (props) => {
           <BsChat className="text-themeMetal mr-1" />
           <span className="text-sm">{props.comments}</span>
         </button>
-        <button
-          className="flex items-center mr-4"
-          onClick={() => {
-            console.log("GOSTEI");
-          }}
-        >
+        <button className="flex items-center mr-4" onClick={handleLike}>
           {props.liked_by_me ? (
             <BsHeartFill className="text-themeRed mr-1" />
           ) : (
