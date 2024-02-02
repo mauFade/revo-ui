@@ -2,9 +2,10 @@ import { HeadPage } from "@commons/components/modules/Head";
 import { revoApi } from "@services/api/revoApi";
 import { FC, FormEvent, useEffect, useState } from "react";
 import Post from "./components/Post";
-import { NEWS_API_KEY, NEWS_API_URL } from "@commons/utils/constans/api";
+import ReactLoading from "react-loading";
 import Image from "next/image";
 import { newsApi } from "@services/api/newsApi";
+import { showToast } from "@commons/utils/showToast";
 
 interface PostInterface {
   id: string;
@@ -38,16 +39,25 @@ const Feed: FC = () => {
 
   const [news, setNews] = useState<NewsArticle[]>([]);
   const [visibleNews, setVisibleNews] = useState<NewsArticle[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [newsLoading, setNewsLoading] = useState<boolean>(true);
 
   const [followingPosts, setFollowingPosts] = useState<PostInterface[]>([]);
+  const [postsLoading, setPostsLoading] = useState<boolean>(true);
 
   const notifications = 4;
+  const newsPerSlice = 2;
 
   useEffect(() => {
-    revoApi.getFollowingPosts().then((data) => {
-      setFollowingPosts(data);
-    });
+    revoApi
+      .getFollowingPosts()
+      .then((data) => {
+        setPostsLoading(false);
+        setFollowingPosts(data);
+      })
+      .catch(() => {
+        showToast("Erro interno de servidor ao obter posts!", "error");
+        setPostsLoading(false);
+      });
   }, [listChange]);
 
   useEffect(() => {
@@ -55,12 +65,12 @@ const Feed: FC = () => {
       .getTechNews()
       .then((data) => {
         setNews(data.articles);
-        setVisibleNews(data.articles.slice(0, 6));
-        setLoading(false);
+        setVisibleNews(data.articles.slice(0, newsPerSlice));
+        setNewsLoading(false);
       })
-      .catch((error) => {
-        console.error("Erro ao obter notícias:", error);
-        setLoading(false);
+      .catch(() => {
+        showToast("Erro ao obter notícias!", "error");
+        setNewsLoading(false);
       });
   }, []);
 
@@ -80,14 +90,16 @@ const Feed: FC = () => {
     const currentVisibleNewsCount = visibleNews.length;
     const nextVisibleNews = news.slice(
       currentVisibleNewsCount,
-      currentVisibleNewsCount + 6
+      currentVisibleNewsCount + newsPerSlice
     );
     setVisibleNews((prevNews) => [...prevNews, ...nextVisibleNews]);
   };
 
   const handleLoadLess = () => {
-    if (visibleNews.length > 6) {
-      setVisibleNews((prevNews) => prevNews.slice(0, visibleNews.length - 6));
+    if (visibleNews.length > newsPerSlice) {
+      setVisibleNews((prevNews) =>
+        prevNews.slice(0, visibleNews.length - newsPerSlice)
+      );
     }
   };
 
@@ -100,7 +112,7 @@ const Feed: FC = () => {
           <h2 className="text-xl font-bold mb-4">Nome do Usuário</h2>
         </div>
 
-        <div className="w-2/5 mx-auto  rounded-3xl">
+        <div className="w-1/3 mx-auto rounded-3xl">
           <form
             onSubmit={handlePostSubmit}
             className="w-full mb-4 flex flex-row justify-center items-center bg-themeBlack p-4 rounded-3xl h-32"
@@ -109,35 +121,43 @@ const Feed: FC = () => {
               placeholder="O que está acontecendo?"
               value={body}
               onChange={(e) => setBody(e.target.value)}
-              className="w-full px-12 text-white rounded-3xl focus:outline-none max-h-20 min-h-12 bg-themeGrey"
+              className="w-full pt-4 px-12 text-white rounded-3xl focus:outline-none max-h-20 min-h-12 bg-themeGrey"
             />
             <button
               type="submit"
-              className="bg-blue-500 text-white py-2 px-4 rounded-3xl h-12 ml-2 disabled:bg-blue-900 hover:bg-blue-700 disabled:hover:cursor-not-allowed w-24 max-w-24"
+              className="bg-blue-500 text-white py-2 px-4 rounded-3xl h-12 ml-2 disabled:bg-blue-800 hover:bg-blue-700 disabled:hover:cursor-not-allowed w-24 max-w-24"
               disabled={body === ""}
             >
               Postar
             </button>
           </form>
 
-          <div className="w-full">
-            {followingPosts.map((post) => (
-              <Post
-                key={post.id}
-                body={post.body}
-                comments={post.comments}
-                likes={post.likes}
-                shares={post.shares}
-                username={post.user.username}
-              />
-            ))}
+          <div className="w-full flex flex-col items-center">
+            {postsLoading ? (
+              <ReactLoading type="bubbles" />
+            ) : (
+              <div className="w-full">
+                {followingPosts.map((post) => (
+                  <Post
+                    avatar="https://i.pinimg.com/originals/d4/68/69/d468693b78aaaea4b11fbd55a7b17909.jpg"
+                    name={post.user.name}
+                    key={post.id}
+                    body={post.body}
+                    comments={post.comments}
+                    likes={post.likes}
+                    shares={post.shares}
+                    username={post.user.username}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="w-3/12 mx-auto bg-themeBlack text-white rounded-3xl hidden lg:block h-full">
+        <div className="w-3/12 mx-auto bg-themeBlack text-white rounded-3xl hidden lg:flex flex-col items-center h-full">
           <h2 className="text-xl font-bold mb-4 text-center mt-8">Notícias</h2>
-          {loading ? (
-            <p>Carregando notícias...</p>
+          {newsLoading ? (
+            <ReactLoading type="bubbles" />
           ) : (
             <>
               <ul>
