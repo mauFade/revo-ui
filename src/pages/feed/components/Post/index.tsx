@@ -21,17 +21,18 @@ interface PostInterface {
 const Post: FC<PostInterface> = (props) => {
   const [isCommentsModalOpen, setIsCommentsModalOpen] =
     useState<boolean>(false);
+  const [isLiked, setIsLiked] = useState<boolean>(false);
 
   const handleToggleCommentsModal = () => {
     setIsCommentsModalOpen(!isCommentsModalOpen);
   };
 
   const handleLike = async () => {
-    const like = await revoApi.likePost({
+    setIsLiked(!isLiked);
+
+    await revoApi.likePost({
       post_id: props.post_id,
     });
-
-    if (like.success === true) showToast("Like com sucesso!", "success");
   };
 
   return (
@@ -62,10 +63,14 @@ const Post: FC<PostInterface> = (props) => {
         <button className="flex items-center mr-4" onClick={handleLike}>
           {props.liked_by_me ? (
             <BsHeartFill className="text-themeRed mr-1" />
-          ) : (
+          ) : isLiked ? (
             <BsHeart className="text-themeMetal mr-1" />
+          ) : (
+            <BsHeartFill className="text-themeRed mr-1" />
           )}
-          <span className="text-sm">{props.likes}</span>
+          <span className="text-sm">
+            {isLiked ? props.likes + 1 : props.likes}
+          </span>
         </button>
         <button
           className="flex items-center"
