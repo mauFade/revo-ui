@@ -35,6 +35,26 @@ const Post: FC<PostInterface> = (props) => {
     });
   };
 
+  const getLikeIcon = () => {
+    if (props.liked_by_me && isLiked) {
+      return <BsHeart className="text-themeMetal mr-1" />;
+    }
+
+    if (props.liked_by_me || isLiked) {
+      return <BsHeartFill className="text-themeRed mr-1" />;
+    }
+
+    return <BsHeart className="text-themeMetal mr-1" />;
+  };
+
+  const computeLikeCount = () => {
+    if (props.liked_by_me) {
+      return isLiked ? props.likes - 1 : props.likes;
+    } else {
+      return isLiked ? props.likes + 1 : props.likes;
+    }
+  };
+
   return (
     <div className="bg-themeBlack p-6 my-4 rounded-3xl shadow-md flex flex-col items-start">
       <div className="flex flex-row items-center mb-2 text-themeMetal">
@@ -61,16 +81,8 @@ const Post: FC<PostInterface> = (props) => {
           <span className="text-sm">{props.comments}</span>
         </button>
         <button className="flex items-center mr-4" onClick={handleLike}>
-          {props.liked_by_me ? (
-            <BsHeartFill className="text-themeRed mr-1" />
-          ) : isLiked ? (
-            <BsHeart className="text-themeMetal mr-1" />
-          ) : (
-            <BsHeartFill className="text-themeRed mr-1" />
-          )}
-          <span className="text-sm">
-            {isLiked ? props.likes + 1 : props.likes}
-          </span>
+          {getLikeIcon()}
+          <span className="text-sm">{computeLikeCount()}</span>
         </button>
         <button
           className="flex items-center"
